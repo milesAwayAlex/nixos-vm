@@ -1,0 +1,17 @@
+# Nix build artifacts
+result
+result-*
+*.result
+
+# Nix build directories
+.direnv/
+.env/
+.git-hooks
+
+# Editor/OS artifacts
+*~
+.DS_Store
+.*.swp
+
+# VM directory
+vm/
