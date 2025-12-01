@@ -15,6 +15,7 @@
         # e2fsprogs
         # gnome-monitor-config
         # virglrenderer
+        deno
         dig
         tmux
         vim
@@ -51,21 +52,26 @@
       #   };
       # };
 
-      # WebDAV file sharing
-      services.spice-webdavd.enable = true;
-      services.davfs2 = {
-        enable = true;
-        settings = {
-          globalSection = {
-            ask_auth = 0;
-          };
-        };
-      };
-      fileSystems."/mnt/vm-share" = {
-        device = "http://127.0.0.1:9843/";
-        fsType = "davfs";
-        options = [ "nofail" ];
-      };
+      # Open ports
+      networking.firewall.allowedTCPPorts = [
+        8000
+      ];
+
+      # # WebDAV file sharing
+      # services.spice-webdavd.enable = true;
+      # services.davfs2 = {
+      #   enable = true;
+      #   settings = {
+      #     globalSection = {
+      #       ask_auth = 0;
+      #     };
+      #   };
+      # };
+      # fileSystems."/mnt/vm-share" = {
+      #   device = "http://127.0.0.1:9843/";
+      #   fsType = "davfs";
+      #   options = [ "nofail" ];
+      # };
     };
     nixosModules.base = {pkgs, ...}: {
       security.sudo.wheelNeedsPassword = false;
