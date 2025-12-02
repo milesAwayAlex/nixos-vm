@@ -30,6 +30,8 @@
           # ungoogled-chromium
           chromium
           deluge
+          keepassxc
+          maestral-gui
           telegram-desktop
         ];
       };
@@ -52,10 +54,10 @@
       #   };
       # };
 
-      # Open ports
-      networking.firewall.allowedTCPPorts = [
-        8000
-      ];
+      # # Open ports
+      # networking.firewall.allowedTCPPorts = [
+      #   8000
+      # ];
 
       # # WebDAV file sharing
       # services.spice-webdavd.enable = true;
