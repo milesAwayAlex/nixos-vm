@@ -12,11 +12,13 @@
   outputs = { self, nixpkgs, nixos-generators }: {
     nixosModules.active = {pkgs, ...}: {
       environment.systemPackages = with pkgs; [
-        # e2fsprogs
         # gnome-monitor-config
         # virglrenderer
         deno
         dig
+        e2fsprogs
+        gnupg
+        gnutar
         tmux
         vim
       ];
