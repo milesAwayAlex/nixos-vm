@@ -2,7 +2,7 @@
   description = "WIP NixOS VM";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
     nixos-generators = {
       url = "github:nix-community/nixos-generators";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -48,6 +48,8 @@
         interface = "enp0s1";
       };
 
+      programs.gnupg.agent.enable = true;
+
       # programs.chromium = {
       #   enable = true;
       #   extraOpts = {
@@ -91,7 +93,7 @@
 
       # nixpkgs.config.allowUnfree = true;
 
-      system.stateVersion = "25.05";
+      system.stateVersion = "25.11";
     };
     nixosModules.budgie = ./budgie.nix;
     nixosModules.resolver = ./resolver.nix;
