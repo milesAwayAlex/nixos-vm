@@ -55,6 +55,7 @@ Now the new disk is ready to be used. Rebuild and replace the qcow2 image to hav
 
 ## Roadmap
 
+- [x] Parameterize the username
 - [ ] Add a linter/formatter
 - [ ] Update the flake outputs to work cross-system
 - [ ] Add an output to rebuild the running system

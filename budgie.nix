@@ -1,4 +1,4 @@
-{pkgs, lib, ...}: {
+username: {pkgs, lib, ...}: {
   services.xserver = {
     enable = true;
     autoRepeatDelay = 150;
@@ -13,7 +13,7 @@
   };
 
   services.displayManager.autoLogin.enable = true;
-  services.displayManager.autoLogin.user = "frozen";
+  services.displayManager.autoLogin.user = username;
   services.spice-autorandr.enable = true;
   services.spice-vdagentd.enable = true;
 

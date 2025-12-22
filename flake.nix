@@ -10,6 +10,9 @@
   };
 
   outputs = { self, nixpkgs, nixos-generators }: {
+    local = {
+      username = "frozen";
+    };
     nixosModules.active = {pkgs, ...}: {
       environment.systemPackages = with pkgs; [
         # gnome-monitor-config
@@ -23,7 +26,7 @@
         vim
       ];
 
-      users.users.frozen = {
+      users.users.${self.local.username} = {
         description = "Regular User";
         extraGroups = [ "networkmanager" "wheel" ];
         isNormalUser = true;
@@ -95,7 +98,7 @@
 
       system.stateVersion = "25.11";
     };
-    nixosModules.budgie = ./budgie.nix;
+    nixosModules.budgie = import ./budgie.nix self.local.username;
     nixosModules.resolver = ./resolver.nix;
     nixosModules.vm = {pkgs, ...}: {
       virtualisation.vmVariant.virtualisation.diskImage = null;
@@ -109,6 +112,7 @@
       modules = with self.nixosModules; [
         active
         base
+        resolver
         vm
       ];
     };
