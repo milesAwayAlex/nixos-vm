@@ -61,10 +61,10 @@
       #   };
       # };
 
-      # # Open ports
-      # networking.firewall.allowedTCPPorts = [
-      #   8000
-      # ];
+      # Open ports
+      networking.firewall.allowedTCPPorts = [
+        8000
+      ];
 
       # # WebDAV file sharing
       # services.spice-webdavd.enable = true;
@@ -98,8 +98,6 @@
 
       system.stateVersion = "25.11";
     };
-    nixosModules.budgie = import ./budgie.nix self.local.username;
-    nixosModules.resolver = ./resolver.nix;
     nixosModules.vm = {pkgs, ...}: {
       virtualisation.vmVariant.virtualisation.diskImage = null;
       virtualisation.vmVariant.virtualisation.host.pkgs = nixpkgs.legacyPackages.aarch64-darwin;
@@ -112,19 +110,20 @@
       modules = with self.nixosModules; [
         active
         base
-        resolver
+        ./resolver.nix
         vm
       ];
     };
     packages.aarch64-darwin.darwinVM = self.nixosConfigurations.darwinVM.config.system.build.vm;
     packages.aarch64-darwin.qcow = nixos-generators.nixosGenerate {
       format = "qcow";
+      specialArgs = { var = self.local; };
       system = "aarch64-linux";
       modules = with self.nixosModules; [
         active
         base
-        budgie
-        resolver
+        ./budgie.nix
+        ./resolver.nix
       ];
     };
   };

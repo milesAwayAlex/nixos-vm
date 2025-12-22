@@ -1,4 +1,4 @@
-username: {pkgs, lib, ...}: {
+{pkgs, lib, var, ...}: {
   services.xserver = {
     enable = true;
     autoRepeatDelay = 150;
@@ -13,7 +13,7 @@ username: {pkgs, lib, ...}: {
   };
 
   services.displayManager.autoLogin.enable = true;
-  services.displayManager.autoLogin.user = username;
+  services.displayManager.autoLogin.user = var.username;
   services.spice-autorandr.enable = true;
   services.spice-vdagentd.enable = true;
 
@@ -50,6 +50,7 @@ username: {pkgs, lib, ...}: {
         {
           lockAll = true; # prevents overriding
           settings = {
+            /*
             "org/gnome/desktop/background" = {
               color-shading-type = "solid";
               picture-options = "zoom";
@@ -62,6 +63,7 @@ username: {pkgs, lib, ...}: {
               font-antialiasing = "rgba";
               scaling-factor = lib.gvariant.mkUint32 2;
             };
+            */
             "org/gnome/desktop/input-sources" = {
               sources = [
                 (lib.gvariant.mkTuple [ "xkb" "us+dvp" ])
@@ -86,6 +88,7 @@ username: {pkgs, lib, ...}: {
               builtin-theme = true;
               dark-theme = true;
             };
+            /*
             "com/solus-project/budgie-panel/applets/{65e6a182-c06e-11f0-a174-5ebae9d6dc0f}" = {
               position = lib.gvariant.mkUint32 0;
             };
@@ -137,6 +140,7 @@ username: {pkgs, lib, ...}: {
               autohide = "intelligent";
               dock-mode = true;
             };
+            */
           };
         }
       ];
