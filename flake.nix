@@ -115,7 +115,8 @@
       ];
     };
     packages.aarch64-darwin.darwinVM = self.nixosConfigurations.darwinVM.config.system.build.vm;
-    packages.aarch64-darwin.qcow = nixos-generators.nixosGenerate {
+    # the qcow output is platform-independent
+    qcow = nixos-generators.nixosGenerate {
       format = "qcow";
       specialArgs = { var = self.local; };
       system = "aarch64-linux";
