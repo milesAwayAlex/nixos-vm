@@ -9,123 +9,141 @@
     };
   };
 
-  outputs = { self, nixpkgs, nixos-generators }: {
-    local = {
-      username = "frozen";
-    };
-    nixosModules.active = {pkgs, ...}: {
-      environment.systemPackages = with pkgs; [
-        # gnome-monitor-config
-        # virglrenderer
-        deno
-        dig
-        e2fsprogs
-        gnupg
-        gnutar
-        tmux
-        vim
-      ];
+  outputs =
+    {
+      nixos-generators,
+      nixpkgs,
+      self,
+    }:
+    {
+      formatter.aarch64-darwin = nixpkgs.legacyPackages.aarch64-darwin.nixfmt-tree;
+      local = {
+        username = "frozen";
+      };
+      nixosModules.active =
+        { pkgs, ... }:
+        {
+          environment.systemPackages = with pkgs; [
+            # gnome-monitor-config
+            # virglrenderer
+            deno
+            dig
+            e2fsprogs
+            gnupg
+            gnutar
+            tmux
+            vim
+          ];
 
-      users.users.${self.local.username} = {
-        description = "Regular User";
-        extraGroups = [ "networkmanager" "wheel" ];
-        isNormalUser = true;
+          users.users.${self.local.username} = {
+            description = "Regular User";
+            extraGroups = [
+              "networkmanager"
+              "wheel"
+            ];
+            isNormalUser = true;
 
-        packages = with pkgs; [
-          # ungoogled-chromium
-          chromium
-          deluge
-          keepassxc
-          maestral-gui
-          telegram-desktop
+            packages = with pkgs; [
+              # ungoogled-chromium
+              chromium
+              deluge
+              keepassxc
+              maestral-gui
+              telegram-desktop
+            ];
+          };
+
+          fileSystems."/home" = {
+            device = "/dev/vdb";
+            fsType = "ext4";
+          };
+
+          programs.captive-browser = {
+            enable = true;
+            interface = "enp0s1";
+          };
+
+          programs.gnupg.agent.enable = true;
+
+          # programs.chromium = {
+          #   enable = true;
+          #   extraOpts = {
+          #     BuiltInDnsClientEnabled = false;
+          #     DnsOverHttpsMode = 0;
+          #   };
+          # };
+
+          # Open ports
+          networking.firewall.allowedTCPPorts = [
+            8000
+          ];
+
+          # # WebDAV file sharing
+          # services.spice-webdavd.enable = true;
+          # services.davfs2 = {
+          #   enable = true;
+          #   settings = {
+          #     globalSection = {
+          #       ask_auth = 0;
+          #     };
+          #   };
+          # };
+          # fileSystems."/mnt/vm-share" = {
+          #   device = "http://127.0.0.1:9843/";
+          #   fsType = "davfs";
+          #   options = [ "nofail" ];
+          # };
+        };
+      nixosModules.base =
+        { pkgs, ... }:
+        {
+          security.sudo.wheelNeedsPassword = false;
+          services.qemuGuest.enable = true;
+
+          # shaves about 700MB off the image size
+          nix.enable = false;
+          documentation = {
+            enable = false;
+            man.enable = false;
+            info.enable = false;
+          };
+
+          # nixpkgs.config.allowUnfree = true;
+
+          system.stateVersion = "25.11";
+        };
+      nixosModules.vm =
+        { pkgs, ... }:
+        {
+          virtualisation.vmVariant.virtualisation.diskImage = null;
+          virtualisation.vmVariant.virtualisation.host.pkgs = nixpkgs.legacyPackages.aarch64-darwin;
+          virtualisation.vmVariant.virtualisation.memorySize = 4096;
+          virtualisation.vmVariant.virtualisation.cores = 8;
+          virtualisation.vmVariant.virtualisation.qemu.guestAgent.enable = true;
+        };
+      nixosConfigurations.darwinVM = nixpkgs.lib.nixosSystem {
+        system = "aarch64-linux";
+        modules = with self.nixosModules; [
+          active
+          base
+          ./resolver.nix
+          vm
         ];
       };
-
-      fileSystems."/home" = {
-         device = "/dev/vdb";
-         fsType = "ext4";
+      packages.aarch64-darwin.darwinVM = self.nixosConfigurations.darwinVM.config.system.build.vm;
+      # the qcow output is platform-independent
+      qcow = nixos-generators.nixosGenerate {
+        format = "qcow";
+        specialArgs = {
+          var = self.local;
+        };
+        system = "aarch64-linux";
+        modules = with self.nixosModules; [
+          active
+          base
+          ./budgie.nix
+          ./resolver.nix
+        ];
       };
-
-      programs.captive-browser = {
-        enable = true;
-        interface = "enp0s1";
-      };
-
-      programs.gnupg.agent.enable = true;
-
-      # programs.chromium = {
-      #   enable = true;
-      #   extraOpts = {
-      #     BuiltInDnsClientEnabled = false;
-      #     DnsOverHttpsMode = 0;
-      #   };
-      # };
-
-      # Open ports
-      networking.firewall.allowedTCPPorts = [
-        8000
-      ];
-
-      # # WebDAV file sharing
-      # services.spice-webdavd.enable = true;
-      # services.davfs2 = {
-      #   enable = true;
-      #   settings = {
-      #     globalSection = {
-      #       ask_auth = 0;
-      #     };
-      #   };
-      # };
-      # fileSystems."/mnt/vm-share" = {
-      #   device = "http://127.0.0.1:9843/";
-      #   fsType = "davfs";
-      #   options = [ "nofail" ];
-      # };
     };
-    nixosModules.base = {pkgs, ...}: {
-      security.sudo.wheelNeedsPassword = false;
-      services.qemuGuest.enable = true;
-
-      # shaves about 700MB off the image size
-      nix.enable = false;
-      documentation = {
-        enable = false;
-        man.enable = false;
-        info.enable = false;
-      };
-
-      # nixpkgs.config.allowUnfree = true;
-
-      system.stateVersion = "25.11";
-    };
-    nixosModules.vm = {pkgs, ...}: {
-      virtualisation.vmVariant.virtualisation.diskImage = null;
-      virtualisation.vmVariant.virtualisation.host.pkgs = nixpkgs.legacyPackages.aarch64-darwin;
-      virtualisation.vmVariant.virtualisation.memorySize = 4096;
-      virtualisation.vmVariant.virtualisation.cores = 8;
-      virtualisation.vmVariant.virtualisation.qemu.guestAgent.enable = true;
-    };
-    nixosConfigurations.darwinVM = nixpkgs.lib.nixosSystem {
-      system = "aarch64-linux";
-      modules = with self.nixosModules; [
-        active
-        base
-        ./resolver.nix
-        vm
-      ];
-    };
-    packages.aarch64-darwin.darwinVM = self.nixosConfigurations.darwinVM.config.system.build.vm;
-    # the qcow output is platform-independent
-    qcow = nixos-generators.nixosGenerate {
-      format = "qcow";
-      specialArgs = { var = self.local; };
-      system = "aarch64-linux";
-      modules = with self.nixosModules; [
-        active
-        base
-        ./budgie.nix
-        ./resolver.nix
-      ];
-    };
-  };
 }

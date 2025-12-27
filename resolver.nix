@@ -1,4 +1,5 @@
-{pkgs, ...}: {
+{ pkgs, ... }:
+{
   services.blocky = {
     enable = true;
     settings = {
@@ -20,8 +21,11 @@
           pro = [ "https://codeberg.org/hagezi/mirror2/raw/branch/main/dns-blocklists/wildcard/pro.txt" ];
           tif = [ "https://codeberg.org/hagezi/mirror2/raw/branch/main/dns-blocklists/wildcard/tif.txt" ];
         };
-        clientGroupsBlock.default = [ "pro" "tif" ];
-        # clientGroupsBlock.default = [ "ads" ];
+        clientGroupsBlock.default = [
+          "pro"
+          "tif"
+          # "ads"
+        ];
       };
 
       caching = {
@@ -43,9 +47,9 @@
         verbosity = 3;
 
         private-address = [
-          "192.168.0.0/16"
-          "172.16.0.0/12"
           "10.0.0.0/8"
+          "172.16.0.0/12"
+          "192.168.0.0/16"
         ];
       };
     };
