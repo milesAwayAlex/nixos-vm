@@ -5,19 +5,27 @@
   ...
 }:
 {
+  # Enable hardware acceleration drivers (virgl)
+  hardware.graphics = {
+    enable = true;
+    extraPackages = with pkgs; [
+      # virtio-gpu
+      mesa
+    ];
+  };
   services.xserver = {
     enable = true;
     autoRepeatDelay = 150;
     autoRepeatInterval = 10;
-    desktopManager.budgie.enable = true;
     displayManager.lightdm.enable = true;
-    videoDrivers = [ "xql" ];
+    # videoDrivers = [ "modesetting" ];
     xkb = {
       layout = "us";
       variant = "dvp";
     };
   };
 
+  services.desktopManager.budgie.enable = true;
   services.displayManager.autoLogin.enable = true;
   services.displayManager.autoLogin.user = var.username;
   services.spice-autorandr.enable = true;
@@ -42,7 +50,7 @@
     x11spice
   ];
 
-  environment.budgie.excludePackages = with pkgs.mate; [
+  environment.budgie.excludePackages = with pkgs; [
     atril
     engrampa
     mate-calc

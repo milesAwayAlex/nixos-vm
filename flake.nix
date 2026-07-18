@@ -2,16 +2,11 @@
   description = "WIP NixOS VM";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
-    nixos-generators = {
-      url = "github:nix-community/nixos-generators";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
   };
 
   outputs =
     {
-      nixos-generators,
       nixpkgs,
       self,
     }:
@@ -131,9 +126,7 @@
         ];
       };
       packages.aarch64-darwin.darwinVM = self.nixosConfigurations.darwinVM.config.system.build.vm;
-      # the qcow output is platform-independent
-      qcow = nixos-generators.nixosGenerate {
-        format = "qcow";
+      nixosConfigurations.qemuVM = nixpkgs.lib.nixosSystem {
         specialArgs = {
           var = self.local;
         };
@@ -145,5 +138,7 @@
           ./resolver.nix
         ];
       };
+      # the qcow output is platform-independent
+      qcow = self.nixosConfigurations.qemuVM.config.system.build.images.qemu-efi;
     };
 }
