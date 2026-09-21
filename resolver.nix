@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ ... }:
 {
   services.blocky = {
     enable = true;
